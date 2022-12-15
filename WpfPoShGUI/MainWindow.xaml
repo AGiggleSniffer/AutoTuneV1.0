@@ -1,0 +1,248 @@
+﻿<Window x:Name="Form" x:Class="WpfPoShGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfPoShGUI"
+        mc:Ignorable="d"
+        Title="AutoTune" 
+        Height="450" 
+        Width="800" 
+        Background="#181735" 
+        WindowStyle="None" 
+        SizeToContent="WidthAndHeight" 
+        ResizeMode="NoResize" 
+        MinHeight="450" 
+        MinWidth="800" 
+        WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Background="#0f0f2d"
+              Grid.ColumnSpan="2"
+              MouseDown="Grid_MouseDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="AutoTune"
+                       Foreground="White"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       FontWeight="Medium"/>
+
+            <TextBlock Text=""
+                       Foreground="White"
+                       Grid.Column="2"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       FontWeight="Medium"/>
+
+            <Button Name="ExitBtn" 
+                    Content="X"
+                    Foreground="White"
+                    FontSize="12"
+                    FontWeight="Medium"
+                    Grid.Column="10"
+                    Grid.ColumnSpan="2"
+                    Margin="100, 0, 0, 0"
+                    Click="ExitBtn_Click">
+
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#fe6584"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#ff4c70"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="20" 
+                                Height="15"
+                                CornerRadius="8"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+
+        <StackPanel Grid.Row="1">
+
+            <StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="10, 10, 0, 0">
+                    <Image Width="50" Height="50"
+                       Source="Images/nerd.ico"/>
+                    <TextBlock Text="Automatic Tuneup"
+                           Foreground="White"
+                           FontSize="20"
+                           FontWeight="Medium"
+                           VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <ListBox x:Name="ListBox" Grid.Row="1"
+                 Background="#181735"
+                 Foreground="White" 
+                 Width="275" 
+                 Height="300"
+                 Margin="0, 10, 0, 0" 
+                 BorderThickness="0,0,0,0">
+                    <CheckBox x:Name="CB1" Content="Start Dism/SFC" Foreground="White" Margin="1,5,0,5"/>
+                    <CheckBox x:Name="CB2" Content="Make NOC Folder" Foreground="White" Margin="1,5,0,5"/>
+                    <CheckBox x:Name="CB3" Content="Install/Repair NOC Calling Card" Foreground="White" Margin="1,5,0,5"/>
+                    <CheckBox x:Name="CB4" Content="Download/Install/Update Tools" Foreground="White" Margin="1,5,0,5" IsChecked="True" Click="CB4_Click"/>
+                    <CheckBox x:Name="CB5" Content="Run ADWCleaner" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB6" Content="Open Malwarebytes" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB7" Content="Open Glary Utilities" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB8" Content="Open CCleaner" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB10" Content="Install UBlock Origin to Edge/Chrome" Foreground="White" Margin="1,5,0,5"/>
+                </ListBox>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="10, 15, 0, 0">
+                    <Button Name="StartBtn" 
+                            Content="Start"
+                            Foreground="White"
+                            FontSize="14"
+                            FontWeight="Medium"
+                            Click="StartBtn_Click">
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#fe6584"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#ff4c70"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Width="100" Height="25"
+                                        CornerRadius="12"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1"
+                    Grid.Column="1">
+            <StackPanel>
+                <TabControl Margin="10,10,10,10"
+                            Height="350"
+                            Background="#0f0f2d">
+                    <TabControl.Resources>
+                        <Style TargetType="{x:Type TabItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type TabItem}">
+                                        <Grid>
+                                            <Border Name="Border" 
+                                                    Margin="0,0,0,0" 
+                                                    Background="Transparent"
+                                                    BorderBrush="Black" 
+                                                    BorderThickness="1,1,1,1" 
+                                                    CornerRadius="5"
+                                                    Height="20">
+                                                <ContentPresenter x:Name="ContentSite" 
+                                                                  VerticalAlignment="Center"
+                                                                  HorizontalAlignment="Center"
+                                                                  ContentSource="Header" 
+                                                                  Margin="12,0,12,2"
+                                                                  RecognizesAccessKey="True"
+                                                                  TextBlock.Foreground="White">
+                                                </ContentPresenter>
+                                            </Border>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Panel.ZIndex" Value="100"/>
+                                                <Setter TargetName="Border" Property="Background" Value="#181735" />
+                                                <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="Border" Property="Background" Value="#0f0f2d" />
+                                                <Setter TargetName="Border" Property="BorderBrush" Value="Black" />
+                                                <Setter Property="Foreground" Value="DarkGray" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.Resources>
+                    <TabItem x:Name="Tab1" 
+                             Header="Asset Info"
+                             Width="80">
+                        <Grid Background="#181735">
+                            <TextBox Name="AssetOutput"
+                                     Background="Transparent"
+                                     Foreground="White"
+                                     TextWrapping="Wrap"
+                                     IsReadOnly="True">
+                            </TextBox>
+                        </Grid>
+                    </TabItem>
+                    <TabItem x:Name="Tab2" 
+                             Header="Tune Up Progress"
+                             Width="125">
+                        <Grid Background="#181735">
+                            <TextBox x:Name="ScriptOutput"
+                                     Background="Black"
+                                     Foreground="White"
+                                     Margin="5, 5, 5, 5"
+                                     IsReadOnly="True">
+                            </TextBox>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </StackPanel>
+            <StackPanel Margin="10, 10, 10, 10">
+                <ProgressBar Height="20" 
+                             Name="ProgressBar1"
+                             Value="0">
+                </ProgressBar>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
