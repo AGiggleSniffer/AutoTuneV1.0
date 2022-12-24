@@ -103,7 +103,7 @@
                             Margin="10, 10, 0, 0">
                     <Image Width="50" Height="50"
                        Source="Images/nerd.ico"/>
-                    <TextBlock Text="Automatic Tuneup"
+                    <TextBlock Text="Nerds On Call Security Suite"
                            Foreground="White"
                            FontSize="20"
                            FontWeight="Medium"
@@ -125,7 +125,7 @@
                     <CheckBox x:Name="CB6" Content="Open Malwarebytes" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
                     <CheckBox x:Name="CB7" Content="Open Glary Utilities" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
                     <CheckBox x:Name="CB8" Content="Open CCleaner" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
-                    <CheckBox x:Name="CB10" Content="Install UBlock Origin to Edge/Chrome" Foreground="White" Margin="1,5,0,5"/>
+                    <CheckBox x:Name="CB9" Content="Install UBlock Origin to Edge/Chrome" Foreground="White" Margin="1,5,0,5"/>
                 </ListBox>
 
                 <StackPanel Orientation="Horizontal"

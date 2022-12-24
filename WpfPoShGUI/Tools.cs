@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Reflection;
+using Microsoft.Win32;
 
 namespace WpfPoShGUI
 {
@@ -20,14 +13,14 @@ namespace WpfPoShGUI
         static readonly HttpClient client = new HttpClient();
 
         /// Async Tasks to Download, Install, Then run target program
-        public static async Task ADW()
+        public static async Task<bool> ADW()
         {
-            var url = "https://adwcleaner.malwarebytes.com/adwcleaner?channel=release";
             var route = @"C:\Users\Public\Downloads";
+            var url = "https://adwcleaner.malwarebytes.com/adwcleaner?channel=release";
 
             /// Start Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "ADWCleaner.exe")))
+            using (var fileStream = File.Create(Path.Combine(route, "ADWCleaner.exe")))
             {
                 stream.CopyTo(fileStream);
             }
@@ -37,85 +30,113 @@ namespace WpfPoShGUI
             /// (Temp until i can figure out redirecting output or just reading log file),
             /// scan, clean infection, do not reboot after
             Process.Start(@"cmd.exe", @"/k C:\Users\Public\Downloads\ADWCleaner.exe /eula /clean /noreboot");
+           
+            return true;
         }
-        public static async Task CC()
+        public static async Task<bool> CC()
         {
             var url = "https://bits.avcdn.net/productfamily_CCLEANER/insttype_FREE/platform_WIN_PIR/installertype_ONLINE/build_RELEASE";
             var route = @"C:\Users\Public\Downloads";
 
             /// Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "CCSetup.exe")))
+            using (var fileStream = File.Create(Path.Combine(route, "CCSetup.exe")))
             {
                 stream.CopyTo(fileStream);
             }
 
-            /// Install Silently
-            var process = Process.Start(@"C:\Users\Public\Downloads\CCSetup.exe", "/S");
-            process.WaitForExit();
+            var install = await Task<bool>.Run(() => 
+            {
+                /// Install Silently
+                var process = Process.Start(@"C:\Users\Public\Downloads\CCSetup.exe", "/S");
+                process.WaitForExit();
 
-            /// Run App
-            Process.Start(@"C:\Program Files\CCleaner\CCleaner64.exe");
+                /// Run App
+                Process.Start(@"C:\Program Files\CCleaner\CCleaner64.exe");
+
+                return true;
+            });
+            return true;
         }
-        public static async Task MB()
+        public static async Task<bool> MB()
         {
-            var url = "https://ninite.com/malwarebytes/ninite.exe";
+            var url = "https://www.malwarebytes.com/api/downloads/mb-windows?filename=MBSetup.exe";
             var route = @"C:\Users\Public\Downloads";
 
             /// Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "MBSetup.exe")))
+            using (var fileStream = File.Create(Path.Combine(route, "MBSetup.exe")))
             {
                 stream.CopyTo(fileStream);
             }
+           
+            var install = await Task<bool>.Run(() => 
+            {
+                /// Install Silently, dont reboot!
+                var process = Process.Start(@"C:\Users\Public\Downloads\MBSetup.exe", "/verysilent /noreboot");
+                process.WaitForExit();
 
-            ///Install
-            var process = Process.Start(@"C:\Users\Public\Downloads\MBSetup.exe", "/silent");
-            process.WaitForExit();
+                Process.Start(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe");
 
-            /// Run App
-            Process.Start(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe");
+                return true;
+            });
+            return true;
         }
-        public static async Task GU()
+        public static async Task<bool> GU()
         {
             var url = "https://www.glarysoft.com/aff/download.php?s=GU";
             var route = @"C:\Users\Public\Downloads";
 
             /// Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "GUSetup.exe")))
+            using (var fileStream = File.Create(Path.Combine(route, "GUSetup.exe")))
             {
                 stream.CopyTo(fileStream);
             }
 
-            /// Install
-            var process = Process.Start(@"C:\Users\Public\Downloads\GUSetup.exe", "/S");
-            process.WaitForExit();
+            var install = await Task<bool>.Run(() => 
+            {
+                /// Install Silently
+                var process = Process.Start(@"C:\Users\Public\Downloads\GUSetup.exe", "/S");
+                process.WaitForExit();
 
-            /// Run App
-            Process.Start(@"C:\Program Files (x86)\Glary Utilities 5\OneClickMaintenance.exe");
+                /// Run App
+                Process.Start(@"C:\Program Files (x86)\Glary Utilities 5\OneClickMaintenance.exe");
+
+                return true;
+            });
+            return true;
         }
-        public static async Task RS()
+        public static async Task<bool> RS()
         {
-            var url = "https://github.com/AGiggleSniffer/Installers-for-Autotune/archive/refs/heads/main.zip";
-            var route = @"C:\Users\Public\Downloads";
-
-            /// Download ZIP
-            var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "RSCallingCard.zip")))
+            /// Test if File Already Exists
+            if (!Directory.Exists(@"C:\Users\Public\Downloads\Installers-for-Autotune-main"))
             {
-                stream.CopyTo(fileStream);
+                var url = "https://github.com/AGiggleSniffer/Installers-for-Autotune/archive/refs/heads/main.zip";
+                var route = @"C:\Users\Public\Downloads";
+
+                /// Download ZIP
+                var stream = await client.GetStreamAsync(url);
+                using (var fileStream = File.Create(Path.Combine(route, "RSCallingCard.zip")))
+                {
+                    stream.CopyTo(fileStream);
+                }
             }
 
-            /// Extract ZIP
-            string startPath = @"C:\Users\Public\Downloads";
-            string zipPath = @"C:\Users\Public\Downloads\RSCallingCard.zip";
-            string extractPath = @"C:\Users\Public\Downloads\RSCallingCard.exe";
-            ZipFile.CreateFromDirectory(startPath, zipPath);
-            ZipFile.ExtractToDirectory(zipPath, extractPath);
+            var extract = await Task<bool>.Run(() => 
+            {
+                if (!Directory.Exists(@"C:\Users\Public\Downloads\Installers-for-Autotune-main"))
+                {
+                    /// Extract ZIP
+                    string zipPath = @"C:\Users\Public\Downloads\RSCallingCard.zip";
+                    string extractPath = @"C:\Users\Public\Downloads";
+                    ZipFile.ExtractToDirectory(zipPath, extractPath);
+                    File.Delete(zipPath);
+                }
 
-            /// Run App
-            Process.Start(@"C:\Users\Public\Downloads\RSCallingCard.exe");
+                return true;
+            });
+            return true;
         }
 
         /// Start DISM/SFC
@@ -126,16 +147,17 @@ namespace WpfPoShGUI
         }
 
         /// Make NOC Folder
-        public void MakeNOC()
+        public async Task<bool> MakeNOC()
         {
             string dir = @"C:\Users\Public\Desktop\Nerds On Call 800-919NERD";
-            // If directory does not exist, create it
+            /// If directory does not exist, create it
             if (!Directory.Exists(dir))
             {
                 DirectoryInfo folder = Directory.CreateDirectory(dir);
 
-
-                using (StreamWriter sw = new StreamWriter(@"C:\Users\Public\Desktop\Nerds On Call 800-919NERD\desktop.ini"))
+                /// Create desktop.ini file
+                string deskIni = @"C:\Users\Public\Desktop\Nerds On Call 800-919NERD\desktop.ini";
+                using (StreamWriter sw = new StreamWriter(deskIni))
                 {
                     sw.WriteLine("[.ShellClassInfo]");
                     sw.WriteLine("ConfirmFileOp=0");
@@ -145,25 +167,54 @@ namespace WpfPoShGUI
                     sw.Close();
                 }
 
+                /// Check to see if Nerds icon exists, If not then download it
+                string nerdsIco = @"C:\Users\Public\Downloads\Installers-for-Autotune-main\Noc_Downloads\nerd.ico";
+                string place = @"C:\Users\Public\Desktop\Nerds On Call 800-919NERD\nerd.ico";
+                if ((!Directory.Exists(nerdsIco)))
+                {
+                    /// Download Resource folder
+                    await RS();
+                }
+
+                /// Copy Nerds icon then set Attributes
+                File.Copy(nerdsIco, place);
+                File.SetAttributes(place, FileAttributes.Hidden);
+
+                /// Hide icon and desktop.ini then set folder as a system folder
+                File.SetAttributes(deskIni, FileAttributes.Hidden);
                 folder.Attributes |= FileAttributes.System;
+                folder.Attributes |= FileAttributes.ReadOnly;
+                folder.Attributes |= FileAttributes.Directory;
             }
+
+            return true;
         }
 
-        /// Adds Reg keys so next time Chrome or Edge opens, it updates or asks to install UBlock Origin
-        public void InstallUB()
+        /// Adds Registry keys so next time Chrome or Edge opens, it updates or asks to install UBlock Origin
+        public static async Task<bool> InstallUB()
         {
-            /// Write to Google Chrome
-            string key = @"HKLM:\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm";
-            string valueName = "update_url"; // "(Default)" value
-            string value = "https://clients2.google.com/service/update2/crx";
-            Microsoft.Win32.Registry.SetValue(key, valueName, value, Microsoft.Win32.RegistryValueKind.String);
-            AssetOutput.AppendText("\nGoogle Chrome Updated!\nOpen Chrome to Finish\n");
 
-            /// Write to MS Edge
-            key = @"HKLM:\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm";
-            value = "https://clients2.google.com/service/update2/crx";
-            Microsoft.Win32.Registry.SetValue(key, valueName, value, Microsoft.Win32.RegistryValueKind.String);
-            AssetOutput.AppendText("\nMicrosoft Edge Updated!\nOpen Edge to Finish\n");
+            string valueName = "update_url";
+
+            var GC = await Task.Run<bool>(() =>
+            {
+                /// Write to Google Chrome
+                string value = "https://clients2.google.com/service/update2/crx";
+                string key = @"HKEY_LOCAL_MACHINE\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm";
+                Registry.SetValue(key, valueName, value, RegistryValueKind.String);
+                return true;
+            });
+
+            var edge = await Task.Run<bool>(() => 
+            {
+                /// Write to MS Edge
+                string eValue = "https://edge.microsoft.com/extensionwebstorebase/v1/crx";
+                string eKey = @"HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Edge\Extensions\odfafepnkmbhccpbejgmiehpchacaeak";
+                Registry.SetValue(eKey, valueName, eValue, RegistryValueKind.String);
+                return true;
+            });
+
+            return true;
         }
     }
 }
