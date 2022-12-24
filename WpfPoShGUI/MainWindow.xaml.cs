@@ -1,41 +1,31 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Security.Cryptography;
 using System.Windows.Media.Animation;
 
 namespace WpfPoShGUI
 {
     public partial class MainWindow : Window
     {
-        /// Auto Tune BOI
-        /// No one was ready for this
-        /// Because no one asked for this
-        /// but it saves me a lot of time, so: f the haters
+        // Initialize Main Window & Call Asset
         public MainWindow()
         {
             InitializeComponent();
+
             /// Call Hardware Info
             WriteAsset();
         }
 
-        /// Make the top grid clickable for moving the window
+        // Put hardware string into the correct box
+        public void WriteAsset()
+        {
+            AssetOutput.Text = asset;
+        }
+
+        // Make the top grid clickable for moving the window
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -44,19 +34,13 @@ namespace WpfPoShGUI
             }
         }
 
-        /// Close window
+        // Close window
         private void ExitBtn_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        /// Put hardware string into the correct box
-        public void WriteAsset()
-        { 
-            AssetOutput.Text = asset; 
-        }
-
-        /// If Update tools are selected allow run of tools, if not disable run of tools
+        // If Update tools are selected allow run of tools, if not disable run of tools
         public void CB4_Click(object sender, RoutedEventArgs e)
         {
             if (CB4.IsChecked == false)
@@ -81,28 +65,25 @@ namespace WpfPoShGUI
                 CB8.IsEnabled = true;
             }
         }
-    }
-    public partial class MainWindow : Window
-    {
-        /// Start main functions on button press
+
+        // Start main functions on button press
         public async void StartBtn_Click(object sender, EventArgs e)
         {
-
             /// Disable start button 
             /// The way the checkboxes are written into a string cause errors on a second start, 
             /// but this prevents other issues as well
             StartBtn.IsEnabled = false;
 
-            /// Initialize progress bar value
+            // Initialize progress bar value
             ProgressBar1.Value = 0;
 
             /// Check state of Checkboes and dump into string
             /// Only dump into string to assign values after checking state
-            /// preventing a second for each statement to loop mass if statements
+            /// preventing a second for each statement to loop mass if statements,
             /// since progress bar values need to be assigned after checking how many checboxes are selected
             string selectedToppings = string.Empty;
             int amountOfCB = 0;
-            CheckBox[] checkboxes = new CheckBox[] { CB1, CB2, CB3, CB5, CB6, CB7, CB8, CB10 };
+            CheckBox[] checkboxes = new CheckBox[] { CB1, CB2, CB3, CB5, CB6, CB7, CB8, CB9 };
             foreach (CheckBox c in checkboxes)
             {
                 if (c.IsChecked == true)
@@ -114,7 +95,7 @@ namespace WpfPoShGUI
                 }
             }
 
-            /// Find percentage of 100 from how many checkboxes are selected
+            // Find percentage of 100 from how many checkboxes are selected
             int progVal = 0;
             try
             {
@@ -124,59 +105,70 @@ namespace WpfPoShGUI
             {
             }    
 
-            /// Start Processes based on what user selected and assign progressbar values
+            // Start Processes based on what user selected and assign progressbar values
             if (selectedToppings.Contains("CB1"))
             {
                 FileChecker();
-                ScriptOutput.AppendText("Starting DISM/SFC ...");
+                ScriptOutput.AppendText("\nStarting DISM/SFC ...\n");
                 ProgressBar1.Value += progVal;
             }
             if (selectedToppings.Contains("CB2"))
             {
-                MakeNOC();
-                ScriptOutput.AppendText("Nerds on Call Security Folder Made!");
+                ScriptOutput.AppendText("Making Nerds on Call Security Folder...");
+                await MakeNOC();
+                ScriptOutput.AppendText("\nNerds on Call Security Folder Made!\n");
                 ProgressBar1.Value += progVal;
             }
             if (selectedToppings.Contains("CB3"))
             {
+                ScriptOutput.AppendText("\nDownloading rescue.msi...");
                 await RS();
+                Process.Start(@"C:\Users\Public\Downloads\Installers-for-Autotune-main\Noc_Downloads\remote.msi");
                 ScriptOutput.AppendText("\nCalling Card Repair Downloaded!\nOpening...\n");
                 ProgressBar1.Value += progVal;
             }
             if (selectedToppings.Contains("CB5"))
             {
+                ScriptOutput.AppendText("\nDownloading ADWCleaner...");
                 await ADW();
                 ScriptOutput.AppendText("\nADWCleaner Downloaded!\nOpening...\n");
                 ProgressBar1.Value += progVal;
             }
             if (selectedToppings.Contains("CB6"))
             {
+                ScriptOutput.AppendText("\nDownloading Malwarebytes...");
                 await MB();
                 ScriptOutput.AppendText("\nMalwarebytes Updated!\nOpening...\n");
                 ProgressBar1.Value += progVal;
             }
             if (selectedToppings.Contains("CB7"))
             {
+                ScriptOutput.AppendText("\nDownloading Glary Utilities...");
                 await GU();
                 ScriptOutput.AppendText("\nGlary Utilities Updated!\nOpening...\n");
                 ProgressBar1.Value += progVal;
             }
             if (selectedToppings.Contains("CB8"))
             {
+                ScriptOutput.AppendText("\nDownloading CCleaner...");
                 await CC();
                 ProgressBar1.Value += progVal;
                 ScriptOutput.AppendText("\nCCleaner Updated!\nOpening...\n");
             }
-            if (selectedToppings.Contains("CB10"))
+            if (selectedToppings.Contains("CB9"))
             {
-                InstallUB();
+                ScriptOutput.AppendText("\nAdding Ublock Origin...");
+                await InstallUB();
+                ScriptOutput.AppendText("\nInstalled Ublock Origin to Google Chrome and Microsoft Edge\nOpen Chrome and Edge to Finish\n");
                 ProgressBar1.Value += progVal;
             }
 
-            /// Start Progress Bar
+            // Start Progress Bar
             Duration duration = new Duration(TimeSpan.FromSeconds(60));
             DoubleAnimation doubleanimation = new DoubleAnimation(ProgressBar1.Value, duration);
             ProgressBar1.BeginAnimation(ProgressBar.ValueProperty, doubleanimation);
+
+            ScriptOutput.AppendText("\nScript Complete.\n");
         }
     }
 }

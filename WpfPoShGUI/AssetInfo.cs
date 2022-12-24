@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Win32;
 using System.Management;
+using System.IO;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace WpfPoShGUI
 {
@@ -15,27 +11,23 @@ namespace WpfPoShGUI
     {
         public static class HardwareInfo
         {
-            ///
-            /// Retrieving HDD Size & Model
-            /// 
-            /// 
-            public static string GetDriveSize()
+            public static string GetDriveInfo2()
             {
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_DiskDrive");
-
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
                 foreach (ManagementObject wmi in searcher.Get())
                 {
+                    object size = wmi["Size"];
+                    object tSize = Convert.ToInt64(size) / 1073741824;
                     try
                     {
-                        return (Convert.ToInt64(wmi.GetPropertyValue("Size")) / 1073741824).ToString() + "GB" + 
-                            "\n            Brand: " + (string)wmi["Model"];
+                        return $"\t{(string)wmi["Model"]}\t{tSize}GB";
                     }
 
                     catch { }
 
                 }
 
-                return "Size: Unknown";
+                return "\tDisk Info: Unknown";
             }
             ///
             /// Retrieving HDD Info
@@ -43,20 +35,19 @@ namespace WpfPoShGUI
             /// 
             public static string GetDriveInfo()
             {
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_LogicalDisk");
-
-                foreach (ManagementObject wmi in searcher.Get())
+                string dInfo = string.Empty;
+                DriveInfo[] allDrives = DriveInfo.GetDrives();
+                foreach (DriveInfo drive in allDrives)
                 {
-                    try
-                    {
-                        return (string)wmi["FileSystem"];
-                    }
+                    double freeSpace = drive.TotalFreeSpace / 1073741824;
+                    double totalSpace = drive.TotalSize / 1073741824;
+                    string format = drive.DriveFormat;
+                    string name = drive.Name;
 
-                    catch { }
-
+                    dInfo += ($"\t{name} \t{format} \t- \t{freeSpace}GB \tof: {totalSpace}GB\n");
                 }
 
-                return "Disk: Unknown";
+                return dInfo;
             }
             ///
             /// Retrieving GPU Name
@@ -183,15 +174,15 @@ namespace WpfPoShGUI
                 {
                     try
                     {
-                        return wmi.GetPropertyValue("SerialNumber").ToString();
-
+                        string biosSerNum = wmi.GetPropertyValue("SerialNumber").ToString();
+                        return $"\tBIOS: \t{biosSerNum}";
                     }
 
                     catch { }
 
                 }
 
-                return "BIOS Serial Number: Unknown";
+                return "\tBIOS Serial Number: Unknown";
 
             }
             ///
@@ -256,7 +247,7 @@ namespace WpfPoShGUI
                     MemSize += mCap;
                 }
                 MemSize = (MemSize / 1073741824);
-                return MemSize.ToString() + "GB";
+                return $"\tTotal: \t{MemSize.ToString()}GB";
             }
             ///
             /// Retrieving No of Ram Slot on Motherboard.
@@ -275,7 +266,7 @@ namespace WpfPoShGUI
                     MemSlots = Convert.ToInt32(obj["MemoryDevices"]);
 
                 }
-                return MemSlots.ToString();
+                return $"\tSticks: \t{MemSlots.ToString()}";
             }
             ///
             /// method for retrieving the CPU Manufacturer
@@ -408,7 +399,7 @@ namespace WpfPoShGUI
                     //mo.Properties["Name"].Value.ToString();
                     //break;
                 }
-                return info;
+                return $"\tSKU: \t{info}";
             }
 
         }
@@ -436,14 +427,14 @@ namespace WpfPoShGUI
 
             Serial Number
         --------------------------------------
-            Bios: {HardwareInfo.GetBIOSserNo()}
-            SKU: {HardwareInfo.GetSystemSKU()}
+            {HardwareInfo.GetBIOSserNo()}
+            {HardwareInfo.GetSystemSKU()}
 
             
             Memory
         --------------------------------------
-            Sticks: {HardwareInfo.GetNoRamSlots()}
-            Total: {HardwareInfo.GetPhysicalMemory()}
+            {HardwareInfo.GetNoRamSlots()}
+            {HardwareInfo.GetPhysicalMemory()}
 
             
             CPU
@@ -460,8 +451,10 @@ namespace WpfPoShGUI
 
             DiskInfo
         --------------------------------------
-            Size: {HardwareInfo.GetDriveSize()}
-            Format: {HardwareInfo.GetDriveInfo()}
+            Partitions:
+            {HardwareInfo.GetDriveInfo()}
+            Local / Physical Drives:
+            {HardwareInfo.GetDriveInfo2()}
 
            
             Mac Address
