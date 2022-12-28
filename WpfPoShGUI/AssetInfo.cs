@@ -11,31 +11,42 @@ namespace WpfPoShGUI
     {
         public static class HardwareInfo
         {
+            /// 
+            /// Retrieving Physical Disks
+            /// 
+            /// 
             public static string GetDriveInfo2()
             {
+                string dInfo = string.Empty;
+
                 ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
                 foreach (ManagementObject wmi in searcher.Get())
                 {
                     object size = wmi["Size"];
                     object tSize = Convert.ToInt64(size) / 1073741824;
+
                     try
                     {
-                        return $"\t{(string)wmi["Model"]}\t{tSize}GB";
+                        dInfo += $"\t{(string)wmi["Model"]}\t{tSize}GB";
                     }
 
-                    catch { }
+                    catch 
+                    {
+                        return "\tUnknown";
+                    }
 
                 }
 
-                return "\tDisk Info: Unknown";
+                return dInfo;
             }
             ///
-            /// Retrieving HDD Info
+            /// Retrieving Partitions
             /// 
             /// 
             public static string GetDriveInfo()
             {
                 string dInfo = string.Empty;
+
                 DriveInfo[] allDrives = DriveInfo.GetDrives();
                 foreach (DriveInfo drive in allDrives)
                 {
@@ -44,7 +55,14 @@ namespace WpfPoShGUI
                     string format = drive.DriveFormat;
                     string name = drive.Name;
 
-                    dInfo += ($"\t{name} \t{format} \t- \t{freeSpace}GB \tof: {totalSpace}GB\n");
+                    try
+                    {
+                        dInfo += ($"\t{name} \t{format} \t- \t{freeSpace}GB \tof: {totalSpace}GB\n");
+                    }
+                    catch 
+                    {
+                        return "Unknown";
+                    }
                 }
 
                 return dInfo;
@@ -79,13 +97,21 @@ namespace WpfPoShGUI
                 ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
                 ManagementObjectCollection moc = mc.GetInstances();
                 string MACAddress = String.Empty;
-                foreach (ManagementObject mo in moc)
+
+                try
                 {
-                    if (MACAddress == String.Empty)
+                    foreach (ManagementObject mo in moc)
                     {
-                        if ((bool)mo["IPEnabled"] == true) MACAddress = mo["MacAddress"].ToString();
+                        if (MACAddress == String.Empty)
+                        {
+                            if ((bool)mo["IPEnabled"] == true) MACAddress = mo["MacAddress"].ToString();
+                        }
+                        mo.Dispose();
                     }
-                    mo.Dispose();
+                }
+                catch 
+                { 
+                    return "Unknown"; 
                 }
 
                 return MACAddress;
@@ -241,13 +267,20 @@ namespace WpfPoShGUI
                 long mCap = 0;
 
                 // In case more than one Memory sticks are installed
-                foreach (ManagementObject obj in oCollection)
+                try
                 {
-                    mCap = Convert.ToInt64(obj["Capacity"]);
-                    MemSize += mCap;
+                    foreach (ManagementObject obj in oCollection)
+                    {
+                        mCap = Convert.ToInt64(obj["Capacity"]);
+                        MemSize += mCap;
+                    }
+                    MemSize = (MemSize / 1073741824);
+                    return $"\tTotal: \t{MemSize.ToString()}GB";
                 }
-                MemSize = (MemSize / 1073741824);
-                return $"\tTotal: \t{MemSize.ToString()}GB";
+                catch 
+                {
+                    return "Unknown";
+                }           
             }
             ///
             /// Retrieving No of Ram Slot on Motherboard.
@@ -261,12 +294,19 @@ namespace WpfPoShGUI
                 ObjectQuery oQuery2 = new ObjectQuery("SELECT MemoryDevices FROM Win32_PhysicalMemoryArray");
                 ManagementObjectSearcher oSearcher2 = new ManagementObjectSearcher(oMs, oQuery2);
                 ManagementObjectCollection oCollection2 = oSearcher2.Get();
-                foreach (ManagementObject obj in oCollection2)
-                {
-                    MemSlots = Convert.ToInt32(obj["MemoryDevices"]);
 
+                try
+                {
+                    foreach (ManagementObject obj in oCollection2)
+                    {
+                        MemSlots = Convert.ToInt32(obj["MemoryDevices"]);
+                    }
+                    return $"\tSticks: \t{MemSlots.ToString()}";
                 }
-                return $"\tSticks: \t{MemSlots.ToString()}";
+                catch 
+                { 
+                    return "Unknown"; 
+                }
             }
             ///
             /// method for retrieving the CPU Manufacturer
@@ -282,15 +322,22 @@ namespace WpfPoShGUI
                 //create a ManagementObjectCollection to loop through
                 ManagementObjectCollection objCol = mgmt.GetInstances();
                 //start our loop for all processors found
-                foreach (ManagementObject obj in objCol)
+                try
                 {
-                    if (cpuMan == String.Empty)
+                    foreach (ManagementObject obj in objCol)
                     {
-                        // only return manufacturer from first CPU
-                        cpuMan = obj.Properties["Manufacturer"].Value.ToString();
+                        if (cpuMan == String.Empty)
+                        {
+                            // only return manufacturer from first CPU
+                            cpuMan = obj.Properties["Manufacturer"].Value.ToString();
+                        }
                     }
+                    return cpuMan;
                 }
-                return cpuMan;
+                catch 
+                { 
+                    return "Unknown"; 
+                }
             }
             ///
             /// method to retrieve the network adapters
@@ -307,28 +354,35 @@ namespace WpfPoShGUI
                 ManagementObjectCollection objCol = mgmt.GetInstances();
                 string gateway = String.Empty;
                 //loop through all the objects we find
-                foreach (ManagementObject obj in objCol)
+                try
                 {
-                    if (gateway == String.Empty)  // only return MAC Address from first card
+                    foreach (ManagementObject obj in objCol)
                     {
-                        //grab the value from the first network adapter we find
-                        //you can change the string to an array and get all
-                        //network adapters found as well
-                        //check to see if the adapter's IPEnabled
-                        //equals true
-                        if ((bool)obj["IPEnabled"] == true)
+                        if (gateway == String.Empty)  // only return MAC Address from first card
                         {
-                            gateway = obj["DefaultIPGateway"].ToString();
+                            //grab the value from the first network adapter we find
+                            //you can change the string to an array and get all
+                            //network adapters found as well
+                            //check to see if the adapter's IPEnabled
+                            //equals true
+                            if ((bool)obj["IPEnabled"] == true)
+                            {
+                                gateway = obj["DefaultIPGateway"].ToString();
+                            }
                         }
+                        //dispose of our object
+                        obj.Dispose();
                     }
-                    //dispose of our object
-                    obj.Dispose();
+                    //replace the ":" with an empty space, this could also
+                    //be removed if you wish
+                    gateway = gateway.Replace(":", "");
+                    //return the mac address
+                    return gateway;
                 }
-                //replace the ":" with an empty space, this could also
-                //be removed if you wish
-                gateway = gateway.Replace(":", "");
-                //return the mac address
-                return gateway;
+                catch 
+                { 
+                    return "Unknown"; 
+                }
             }
             ///
             /// Retrieve CPU Speed.
@@ -345,6 +399,7 @@ namespace WpfPoShGUI
                         break;
                     }
                 }
+
                 return GHz;
             }
             ///
@@ -362,7 +417,7 @@ namespace WpfPoShGUI
                     }
                     catch { }
                 }
-                return "OS Maker: Unknown";
+                return "Unknown";
             }
             ///
             /// Retrieving Processor Information.
@@ -373,16 +428,23 @@ namespace WpfPoShGUI
                 ManagementClass mc = new ManagementClass("win32_processor");
                 ManagementObjectCollection moc = mc.GetInstances();
                 String info = String.Empty;
-                foreach (ManagementObject mo in moc)
+                try
                 {
-                    string name = (string)mo["Name"];
-                    name = name.Replace("(TM)", "™").Replace("(tm)", "™").Replace("(R)", "®").Replace("(r)", "®").Replace("(C)", "©").Replace("(c)", "©").Replace("    ", " ").Replace("  ", " ");
+                    foreach (ManagementObject mo in moc)
+                    {
+                        string name = (string)mo["Name"];
+                        name = name.Replace("(TM)", "™").Replace("(tm)", "™").Replace("(R)", "®").Replace("(r)", "®").Replace("(C)", "©").Replace("(c)", "©").Replace("    ", " ").Replace("  ", " ");
 
-                    info = name;
-                    //mo.Properties["Name"].Value.ToString();
-                    //break;
+                        info = name;
+                        //mo.Properties["Name"].Value.ToString();
+                        //break;
+                    }
+                    return info;
                 }
-                return info;
+                catch 
+                { 
+                    return "Unknown";
+                }
             }
             ///
             /// Retrieving SystemSKU.
@@ -393,13 +455,20 @@ namespace WpfPoShGUI
                 ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
                 ManagementObjectCollection moc = mc.GetInstances();
                 String info = String.Empty;
-                foreach (ManagementObject mo in moc)
+                try
                 {
-                    info = (string)mo["SystemSKUNumber"];
-                    //mo.Properties["Name"].Value.ToString();
-                    //break;
+                    foreach (ManagementObject mo in moc)
+                    {
+                        info = (string)mo["SystemSKUNumber"];
+                        //mo.Properties["Name"].Value.ToString();
+                        //break;
+                    }
+                    return $"\tSKU: \t{info}";
                 }
-                return $"\tSKU: \t{info}";
+                catch 
+                { 
+                    return "Unknown";
+                }
             }
 
         }

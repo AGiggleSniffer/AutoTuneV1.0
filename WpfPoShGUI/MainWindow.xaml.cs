@@ -112,13 +112,6 @@ namespace WpfPoShGUI
                 ScriptOutput.AppendText("\nStarting DISM/SFC ...\n");
                 ProgressBar1.Value += progVal;
             }
-            if (selectedToppings.Contains("CB2"))
-            {
-                ScriptOutput.AppendText("Making Nerds on Call Security Folder...");
-                await MakeNOC();
-                ScriptOutput.AppendText("\nNerds on Call Security Folder Made!\n");
-                ProgressBar1.Value += progVal;
-            }
             if (selectedToppings.Contains("CB3"))
             {
                 ScriptOutput.AppendText("\nDownloading rescue.msi...");
@@ -160,6 +153,14 @@ namespace WpfPoShGUI
                 ScriptOutput.AppendText("\nAdding Ublock Origin...");
                 await InstallUB();
                 ScriptOutput.AppendText("\nInstalled Ublock Origin to Google Chrome and Microsoft Edge\nOpen Chrome and Edge to Finish\n");
+                ProgressBar1.Value += progVal;
+            }
+            /// Make NOC folder last for shortcuts
+            if (selectedToppings.Contains("CB2"))
+            {
+                ScriptOutput.AppendText("\nMaking Nerds on Call Security Folder...");
+                await MakeNOC();
+                ScriptOutput.AppendText("\nNerds on Call Security Folder Made!\n");
                 ProgressBar1.Value += progVal;
             }
 
