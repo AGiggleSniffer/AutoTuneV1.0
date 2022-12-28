@@ -91,7 +91,7 @@ namespace WpfPoShGUI
                             object desc = mo["Description"];
                             object mac = mo["MACAddress"];
 
-                            MACAddress += $"\t{desc}\t{mac}\n";
+                            MACAddress += $"\n\t{desc}\n\t{mac}\n";
                         }
                     }
                     return MACAddress;
@@ -351,7 +351,7 @@ namespace WpfPoShGUI
                     ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
                     foreach (ManagementObject wmi in searcher.Get())
                     {
-                        os = ((string)wmi["Caption"]).Trim() + "\n            " + (string)wmi["Version"] + "\n            " + (string)wmi["OSArchitecture"];
+                        os = ((string)wmi["Caption"]).Trim() + "\n\t" + (string)wmi["Version"] + "\n\t" + (string)wmi["OSArchitecture"];
                     }
                     return os;
                 }
