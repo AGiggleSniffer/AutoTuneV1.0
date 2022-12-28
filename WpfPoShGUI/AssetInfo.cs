@@ -86,11 +86,13 @@ namespace WpfPoShGUI
 
                     foreach (ManagementObject mo in moc)
                     {
-                        if (MACAddress == String.Empty)
+                        if ((bool)mo["IPEnabled"] == true)
                         {
-                            if ((bool)mo["IPEnabled"] == true) MACAddress = mo["MacAddress"].ToString();
+                            object desc = mo["Description"];
+                            object mac = mo["MACAddress"];
+
+                            MACAddress += $"\t{desc}\t{mac}\n";
                         }
-                        mo.Dispose();
                     }
                     return MACAddress;
                 }
