@@ -130,9 +130,6 @@ namespace WpfPoShGUI
                 var process = Process.Start(@"C:\Users\Public\Downloads\remote.msi", "/qn");
                 process.WaitForExit();
 
-                /// Run App
-                Process.Start(@"C:\Users\Public\Downloads\remote.msi");
-
                 return true;
             });
 
