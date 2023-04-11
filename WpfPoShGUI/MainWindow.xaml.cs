@@ -95,10 +95,11 @@ namespace WpfPoShGUI
             }
 
             // Find percentage of 100 from how many checkboxes are selected
-            int progVal = 0;
+            double progVal = 0;
             try
             {
-                progVal = 100 / amountOfCB;
+                double val = 100 / amountOfCB;
+                progVal = Math.Round(val);
             }
             catch
             {
@@ -107,15 +108,14 @@ namespace WpfPoShGUI
             // Start Processes based on what user selected and assign progressbar values
             if (selectedToppings.Contains("CB1"))
             {
+                ScriptOutput.AppendText("\nStarting Dism/SFC\n");
                 FileChecker();
-                ScriptOutput.AppendText("\nStarting DISM/SFC ...\n");
                 ProgressBar1.Value += progVal;
             }
             if (selectedToppings.Contains("CB3"))
             {
                 ScriptOutput.AppendText("\nDownloading rescue.msi...");
                 await RS();
-                Process.Start(@"C:\Users\Public\Downloads\Installers-for-Autotune-main\Noc_Downloads\remote.msi");
                 ScriptOutput.AppendText("\nCalling Card Repair Downloaded!\nOpening...\n");
                 ProgressBar1.Value += progVal;
             }
@@ -161,7 +161,7 @@ namespace WpfPoShGUI
                 await MakeNOC();
                 ScriptOutput.AppendText("\nNerds on Call Security Folder Made!\n");
                 ProgressBar1.Value += progVal;
-            }
+            }          
 
             // Start Progress Bar
             Duration duration = new Duration(TimeSpan.FromSeconds(60));

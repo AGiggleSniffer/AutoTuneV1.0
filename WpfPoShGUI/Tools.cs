@@ -5,6 +5,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using Microsoft.Win32;
+using System;
+using IWshRuntimeLibrary;
 
 namespace WpfPoShGUI
 {
@@ -20,7 +22,7 @@ namespace WpfPoShGUI
 
             /// Start Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = File.Create(Path.Combine(route, "ADWCleaner.exe")))
+            using (var fileStream = System.IO.File.Create(Path.Combine(route, "ADWCleaner.exe")))
             {
                 stream.CopyTo(fileStream);
             }
@@ -40,7 +42,7 @@ namespace WpfPoShGUI
 
             /// Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = File.Create(Path.Combine(route, "CCSetup.exe")))
+            using (var fileStream = System.IO.File.Create(Path.Combine(route, "CCSetup.exe")))
             {
                 stream.CopyTo(fileStream);
             }
@@ -56,6 +58,7 @@ namespace WpfPoShGUI
 
                 return true;
             });
+
             return true;
         }
         public static async Task<bool> MB()
@@ -65,7 +68,7 @@ namespace WpfPoShGUI
 
             /// Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = File.Create(Path.Combine(route, "MBSetup.exe")))
+            using (var fileStream = System.IO.File.Create(Path.Combine(route, "MBSetup.exe")))
             {
                 stream.CopyTo(fileStream);
             }
@@ -80,6 +83,7 @@ namespace WpfPoShGUI
 
                 return true;
             });
+
             return true;
         }
         public static async Task<bool> GU()
@@ -89,7 +93,7 @@ namespace WpfPoShGUI
 
             /// Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = File.Create(Path.Combine(route, "GUSetup.exe")))
+            using (var fileStream = System.IO.File.Create(Path.Combine(route, "GUSetup.exe")))
             {
                 stream.CopyTo(fileStream);
             }
@@ -105,45 +109,92 @@ namespace WpfPoShGUI
 
                 return true;
             });
+
             return true;
         }
         public static async Task<bool> RS()
         {
+            var url = "https://s3-us-west-2.amazonaws.com/nerdtools/remote.msi";
+            var route = @"C:\Users\Public\Downloads";
+
+                /// Download ZIP
+            var stream = await client.GetStreamAsync(url);
+            using (var fileStream = System.IO.File.Create(Path.Combine(route, "remote.msi")))
+            {
+                stream.CopyTo(fileStream);
+            }
+
+            var install = await Task<bool>.Run(() =>
+            {
+                /// Install Silently
+                var process = Process.Start(@"C:\Users\Public\Downloads\remote.msi", "/qn");
+                process.WaitForExit();
+
+                /// Run App
+                Process.Start(@"C:\Users\Public\Downloads\remote.msi");
+
+                return true;
+            });
+
+            return true;
+        }
+
+        /// Download Resources
+        public static async Task<bool> Rez()
+        {
             /// Test if File Already Exists
-            if (!Directory.Exists(@"C:\Users\Public\Downloads\Installers-for-Autotune-main"))
+            if (!Directory.Exists(@"C:\Users\Public\Downloads\rez.zip"))
             {
                 var url = "https://github.com/AGiggleSniffer/Installers-for-Autotune/archive/refs/heads/main.zip";
                 var route = @"C:\Users\Public\Downloads";
 
                 /// Download ZIP
                 var stream = await client.GetStreamAsync(url);
-                using (var fileStream = File.Create(Path.Combine(route, "RSCallingCard.zip")))
+                using (var fileStream = System.IO.File.Create(Path.Combine(route, "rez.zip")))
                 {
                     stream.CopyTo(fileStream);
                 }
-            }
 
-            var extract = await Task<bool>.Run(() => 
-            {
-                if (!Directory.Exists(@"C:\Users\Public\Downloads\Installers-for-Autotune-main"))
+                var extract = await Task<bool>.Run(() =>
                 {
-                    /// Extract ZIP
-                    string zipPath = @"C:\Users\Public\Downloads\RSCallingCard.zip";
-                    string extractPath = @"C:\Users\Public\Downloads";
-                    ZipFile.ExtractToDirectory(zipPath, extractPath);
-                    File.Delete(zipPath);
-                }
+                    if (!Directory.Exists(@"C:\Users\Public\Downloads\Installers-for-Autotune-main"))
+                    {
+                        /// Extract ZIP
+                        string zipPath = @"C:\Users\Public\Downloads\rez.zip";
+                        string extractPath = @"C:\Users\Public\Downloads";
+                        ZipFile.ExtractToDirectory(zipPath, extractPath);
+                        System.IO.File.Delete(zipPath);
+                    }
 
-                return true;
-            });
+                    return true;
+                });
+            }
             return true;
         }
 
         /// Start DISM/SFC
         public static void FileChecker()
         {
-            Process.Start(@"cmd.exe", @"/k dism /online /cleanup-image /restorehealth&sfc /scannow");
-            /// Redirect output to ScriptOutput?
+            
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.UseShellExecute = true;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/k dism /online /cleanup-image /restorehealth&sfc /scannow";
+            process.StartInfo = startInfo;
+            process.Start();
+        }
+
+        /// Create Shortcuts
+        public static void Shortcut(string shortcutName, string targetFileLocation)
+        {
+            // Initialize shortcuts
+            string shortcutLocation = Path.Combine(@"C:\Users\Public\Desktop\Nerds On Call 800-919NERD", shortcutName + ".lnk");
+            WshShell shell = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+
+            shortcut.TargetPath = targetFileLocation;           // The path of the file that will launch when the shortcut is run
+            shortcut.Save();
         }
 
         /// Make NOC Folder
@@ -173,19 +224,57 @@ namespace WpfPoShGUI
                 if ((!Directory.Exists(nerdsIco)))
                 {
                     /// Download Resource folder
-                    await RS();
+                    await Rez();
                 }
 
                 /// Copy Nerds icon then set Attributes
-                File.Copy(nerdsIco, place);
-                File.SetAttributes(place, FileAttributes.Hidden);
+                System.IO.File.Copy(nerdsIco, place);
+                System.IO.File.SetAttributes(place, FileAttributes.Hidden);
 
                 /// Hide icon and desktop.ini then set folder as a system folder
-                File.SetAttributes(deskIni, FileAttributes.Hidden);
+                System.IO.File.SetAttributes(deskIni, FileAttributes.Hidden);
                 folder.Attributes |= FileAttributes.System;
                 folder.Attributes |= FileAttributes.ReadOnly;
                 folder.Attributes |= FileAttributes.Directory;
             }
+
+            // Create Shortcutsss
+
+            // MB Shortcut
+            if (System.IO.File.Exists(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"))
+            {
+                Shortcut("Malwarebytes", @"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe");
+            }
+            // Delete MB shortcut from installer
+            if (System.IO.File.Exists(@"C:\Users\Public\Desktop\Malwarebytes.lnk"))
+            {
+                System.IO.File.Delete(@"C:\Users\Public\Desktop\Malwarebytes.lnk");
+            }
+
+            // CC Shortcut
+            if (System.IO.File.Exists(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"))
+            {
+            Shortcut("CCleaner", @"C:\Program Files\CCleaner\CCleaner64.exe");
+            }
+            // Delete CC shortcut from installer
+            if (System.IO.File.Exists(@"C:\Users\Public\Desktop\CCleaner.lnk"))
+            {
+                System.IO.File.Delete(@"C:\Users\Public\Desktop\CCleaner.lnk");
+            }
+
+            // GU Shortcut
+            if (System.IO.File.Exists(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"))
+            {
+                Shortcut("Glary Utilities", @"C:\Program Files (x86)\Glary Utilities 5\Integrator.exe");
+            }
+
+
+            // ADW Shortcut
+            if (System.IO.File.Exists(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"))
+            {
+                Shortcut("ADW Cleaner", @"C:\Users\Public\Downloads\ADWCleaner.exe");
+            }
+                
 
             return true;
         }

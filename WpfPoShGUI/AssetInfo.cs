@@ -115,7 +115,7 @@ namespace WpfPoShGUI
                     }
                     return bMaker;
                 }
-                catch { return "Unknown"; }
+                catch { return "Custom"; }
             }
             ///
             /// Retrieving Motherboard Product Id.
@@ -154,6 +154,24 @@ namespace WpfPoShGUI
                 catch { return "Unknown"; }
             }
             ///
+            /// Retrieving Name
+            /// 
+            /// 
+            public static string ProductName()
+            {
+                try
+                {
+                    string pName = string.Empty;
+                    ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
+                    foreach (ManagementObject wmi in searcher.Get())
+                    {
+                        pName = wmi.GetPropertyValue("Name").ToString();
+                    }
+                    return pName;
+                }
+                catch { return "Unknown"; }
+            }
+            ///
             /// Retrieving BIOS Serial No.
             /// 
             /// 
@@ -170,7 +188,7 @@ namespace WpfPoShGUI
                     }
                     return bSer;
                 }
-                catch { return "Unknown"; }
+                catch { return "Custom"; }
             }
             ///
             /// Retrieving BIOS Caption.
@@ -184,7 +202,7 @@ namespace WpfPoShGUI
                     ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_BIOS");
                     foreach (ManagementObject wmi in searcher.Get())
                     {
-                        bCap = wmi.GetPropertyValue("Caption").ToString();
+                        bCap = "Bios ver: " + (wmi.GetPropertyValue("Caption").ToString());
                     }
                     return bCap;
                 }
@@ -272,7 +290,7 @@ namespace WpfPoShGUI
                     //create a ManagementObjectCollection to loop through
                     ManagementObjectCollection objCol = mgmt.GetInstances();
                     //start our loop for all processors found
-                    foreach (ManagementObject obj in objCol)
+                    foreach (ManagementObject obj in objCol) 
                     {
                         if (cpuMan == String.Empty)
                         {
@@ -400,43 +418,55 @@ namespace WpfPoShGUI
                     }
                     return $"\tSKU: \t{info}";
                 }
-                catch { return "Unknown"; }
+                catch { return "Custom"; }
             }
         }
 
         /// Tidy up hardware info into a string
         public string asset = $@"
+        --------------------------------------
             Host Name
         --------------------------------------
             {Environment.MachineName}
             {HardwareInfo.GetAccountName()}
 
             
+        --------------------------------------
             Operating System
         --------------------------------------
             {HardwareInfo.GetOSInformation()}
 
-            
-            Bios/Make & Model
+
         --------------------------------------
-            {HardwareInfo.GetBoardMaker()} 
+            Device Brand & Model
+        --------------------------------------
+            {HardwareInfo.GetBoardMaker()}
+            {HardwareInfo.ProductName()}
+
+
+        --------------------------------------
+            Bios Make & Model
+        --------------------------------------
             {HardwareInfo.GetBIOSmaker()}
             {HardwareInfo.GetBoardProductId()}
             {HardwareInfo.GetBIOScaption()}
 
 
+        --------------------------------------
             Serial Number
         --------------------------------------
             {HardwareInfo.GetBIOSserNo()}
             {HardwareInfo.GetSystemSKU()}
 
-            
+
+        --------------------------------------
             Memory
         --------------------------------------
             {HardwareInfo.GetNoRamSlots()}
             {HardwareInfo.GetPhysicalMemory()}
 
             
+        --------------------------------------
             CPU
         --------------------------------------
             {HardwareInfo.GetCPUManufacturer()}
@@ -444,11 +474,13 @@ namespace WpfPoShGUI
             Clock Speed: {HardwareInfo.GetCpuSpeedInGHz()}GHz
 
 
+        --------------------------------------
             GPU
         --------------------------------------
             {HardwareInfo.GetGPUInfo()}
 
 
+        --------------------------------------
             DiskInfo
         --------------------------------------
             Partitions:
@@ -456,7 +488,8 @@ namespace WpfPoShGUI
             Local / Physical Drives:
             {HardwareInfo.GetDriveInfo2()}
 
-           
+
+        --------------------------------------
             Mac Address
         --------------------------------------
             {HardwareInfo.GetMACAddress()}
