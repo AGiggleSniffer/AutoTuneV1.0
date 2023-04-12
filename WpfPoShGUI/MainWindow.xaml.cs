@@ -39,6 +39,11 @@ namespace WpfPoShGUI
             this.Close();
         }
 
+        private void Minimize_Click(object sender, EventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
         // If Update tools are selected allow run of tools, if not disable run of tools
         public void CB4_Click(object sender, RoutedEventArgs e)
         {
@@ -46,22 +51,33 @@ namespace WpfPoShGUI
             {
                 CB5.IsEnabled = false;
                 CB5.IsChecked = false;
+                CB5.Opacity = .1;
 
                 CB6.IsEnabled = false;
                 CB6.IsChecked = false;
+                CB6.Opacity = .1;
 
                 CB7.IsEnabled = false;
                 CB7.IsChecked = false;
+                CB7.Opacity = .1;
 
                 CB8.IsEnabled = false;
                 CB8.IsChecked = false;
+                CB8.Opacity = .1;
             }
             else if (CB4.IsChecked == true)
             {
                 CB5.IsEnabled = true;
+                CB5.Opacity = 1;
+                
                 CB6.IsEnabled = true;
+                CB6.Opacity = 1;
+
                 CB7.IsEnabled = true;
+                CB7.Opacity = 1;
+
                 CB8.IsEnabled = true;
+                CB8.Opacity = 1;
             }
         }
 
