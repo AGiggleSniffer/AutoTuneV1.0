@@ -155,10 +155,10 @@
                     <CheckBox x:Name="CB2" Content="Make NOC Folder" Foreground="White" Margin="1,5,0,5"/>
                     <CheckBox x:Name="CB3" Content="Install/Repair NOC Calling Card" Foreground="White" Margin="1,5,0,5"/>
                     <CheckBox x:Name="CB4" Content="Download/Install/Update Tools" Foreground="White" Margin="1,5,0,5" IsChecked="True" Click="CB4_Click"/>
-                    <CheckBox x:Name="CB5" Content="Run ADWCleaner" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
-                    <CheckBox x:Name="CB6" Content="Open Malwarebytes" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
-                    <CheckBox x:Name="CB7" Content="Open Glary Utilities" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
-                    <CheckBox x:Name="CB8" Content="Open CCleaner" Foreground="White" Margin="10,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB5" Content="Run ADWCleaner" Foreground="White" Margin="20,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB6" Content="Open Malwarebytes" Foreground="White" Margin="20,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB7" Content="Open Glary Utilities" Foreground="White" Margin="20,5,0,5" IsChecked="True"/>
+                    <CheckBox x:Name="CB8" Content="Open CCleaner" Foreground="White" Margin="20,5,0,5" IsChecked="True"/>
                     <CheckBox x:Name="CB9" Content="Install UBlock Origin to Edge/Chrome" Foreground="White" Margin="1,5,0,5"/>
                 </ListBox>
 
@@ -173,11 +173,11 @@
 
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#fe6584"/>
+                                <Setter Property="Background" Value="OrangeRed"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#ff4c70"/>
+                                        <Setter Property="Background" Value="DarkOrange"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -217,14 +217,15 @@
                                                     BorderBrush="DarkGray" 
                                                     BorderThickness="1,1,1,0" 
                                                     CornerRadius="2"
-                                                    Height="20">
+                                                    Height="25">
                                                 <ContentPresenter x:Name="ContentSite" 
                                                                   VerticalAlignment="Center"
                                                                   HorizontalAlignment="Center"
                                                                   ContentSource="Header" 
                                                                   Margin="12,0,12,2"
                                                                   RecognizesAccessKey="True"
-                                                                  TextBlock.Foreground="White">
+                                                                  TextBlock.Foreground="LightGray"
+                                                                  TextBlock.FontWeight="ExtraLight">
                                                 </ContentPresenter>
                                             </Border>
                                         </Grid>
@@ -232,9 +233,11 @@
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter Property="Panel.ZIndex" Value="100"/>
                                                 <Setter TargetName="Border" Property="Background" Value="Transparent" />
-                                                <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,2" />
-                                                <Setter TargetName="Border" Property="BorderBrush" Value="LightGray" />
-                                                <Setter TargetName="Border" Property="Margin" Value="0,0,0,1" />
+                                                <Setter TargetName="Border" Property="BorderThickness" Value="2,2,2,3" />
+                                                <Setter TargetName="Border" Property="BorderBrush" Value="CornflowerBlue" />
+                                                <Setter TargetName="ContentSite" Property="TextBlock.Foreground" Value="CornflowerBlue"/>
+                                                <Setter TargetName="Border" Property="Margin" Value="0,-1,0,1" />
+                                                <Setter TargetName="ContentSite" Property="TextBlock.FontWeight" Value="Bold" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -244,7 +247,7 @@
                     </TabControl.Resources>
                     <TabItem x:Name="Tab1" 
                              Header="Asset Info"
-                             Width="80">
+                             Width="90">
                         <Grid Background="Transparent">
                             <TextBox Name="AssetOutput"
                                      Background="Transparent"
@@ -256,7 +259,7 @@
                     </TabItem>
                     <TabItem x:Name="Tab2" 
                              Header="Tune Up Progress"
-                             Width="125">
+                             Width="130">
                         <Grid Background="Transparent">
                             <TextBox x:Name="ScriptOutput"
                                      Background="Black"
