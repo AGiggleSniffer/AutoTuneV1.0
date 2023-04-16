@@ -99,7 +99,7 @@ namespace WpfPoShGUI
             try
             {
                 double val = 100 / amountOfCB;
-                progVal = Math.Round(val);
+                progVal = Math.Ceiling(val);
             }
             catch
             {
@@ -169,6 +169,10 @@ namespace WpfPoShGUI
             ProgressBar1.BeginAnimation(ProgressBar.ValueProperty, doubleanimation);
 
             ScriptOutput.AppendText("\nScript Complete.\n");
+
+            // Re enable start button and clear progress bar string
+            selectedToppings = string.Empty;
+            StartBtn.IsEnabled = true;
         }
     }
 }
