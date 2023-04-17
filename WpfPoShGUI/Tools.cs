@@ -22,7 +22,7 @@ namespace WpfPoShGUI
 
             /// Start Download
             var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "ADWCleaner.exe")))
+            using (FileStream fileStream = System.IO.File.Create(Path.Combine(route, "ADWCleaner.exe")))
             {
                 stream.CopyTo(fileStream);
             }

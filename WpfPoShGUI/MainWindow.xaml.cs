@@ -122,7 +122,8 @@ namespace WpfPoShGUI
             if (selectedToppings.Contains("CB5"))
             {
                 ScriptOutput.AppendText("\nDownloading ADWCleaner...");
-                await ADW();
+                var len = await ADW();
+                ScriptOutput.AppendText("\nSize: " + len);
                 ScriptOutput.AppendText("\nADWCleaner Downloaded!\nOpening...\n");
                 ProgressBar1.Value += progVal;
             }
