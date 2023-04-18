@@ -171,5 +171,26 @@ namespace WpfPoShGUI
 
             ScriptOutput.AppendText("\nScript Complete.\n");
         }
+
+        public async void StartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Progress<ProgressReportModel> progress = new Progress<ProgressReportModel>();
+            progress.ProgressChanged += ReportProgress;
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            var results = await Installer.RunDownloadParallelAsync(progress);
+            ScriptOutput.AppendText(results);
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            ScriptOutput.AppendText($"Total execution time: { elapsedMs }");
+        }
+
+        private void ReportProgress(object sender, ProgressReportModel e)
+        {
+            ProgressBar1.Value = e.PercentageComplete;
+            ScriptOutput.AppendText((e.SitesDownloaded).ToString());
+        }
     }
 }

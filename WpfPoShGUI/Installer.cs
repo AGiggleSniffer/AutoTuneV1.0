@@ -8,6 +8,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
 
 namespace WpfPoShGUI
 {
@@ -18,7 +19,7 @@ namespace WpfPoShGUI
         static readonly HttpClient client = new HttpClient();
 
         // List of strings kinda like an array but fancier
-        private List<string> PrepData()
+        public static List<string> PrepData()
         {
             List<string> output = new List<string>();
 
@@ -28,29 +29,47 @@ namespace WpfPoShGUI
         }
 
         // Download Async
-        private async Task<List<WebsiteDataModel>> RunDownloadParallelAsync()
+        public static async Task<List<WebsiteDataModel>> RunDownloadParallelAsync(IProgress<ProgressReportModel> progress)
         {
             List<string> websites = PrepData();
-            List<Task<WebsiteDataModel>> tasks = new List<Task<WebsiteDataModel>>();
+            List<Task<WebsiteDataModel>> output = new List<Task<WebsiteDataModel>>();
+            ProgressReportModel report = new ProgressReportModel();
 
-            foreach ( string site in websites )
+            await Task.Run(() =>
             {
-                tasks.Add(DownloadWebsiteAsync(site));
-            }
+                Parallel.ForEach<string>(websites, (site) =>
+                {
+                    WebsiteDataModel results = DownloadWebsiteAsync(site);
+                    output.Add(results);
 
-            var results = await Task.WhenAll(tasks);
+                    report.SitesDownloaded = output;
+                    report.PercentageComplete = (output.Count * 100) / websites.Count;
+                    progress.Report(report);
+                });
+            });
 
-            return new List<WebsiteDataModel>(results);
+            return output;
         }
 
         // Download Website data
-        private async Task<WebsiteDataModel> DownloadWebsiteAsync(string websiteURL)
+        public static async Task<WebsiteDataModel> DownloadWebsiteAsync(string websiteURL)
         {
             WebsiteDataModel output = new WebsiteDataModel();
 
             output.WebsiteUrl = websiteURL;
             var stream = await client.GetStreamAsync(websiteURL);
-            output.WebsiteData = "To Be Added";
+            var response = await client.GetAsync(websiteURL, HttpCompletionOption.ResponseHeadersRead);
+            var fileStream = System.IO.File.Create(@"C:\Users\Public\Downloads\ADWCleaner.exe");
+
+            foreach ( var header in response.Headers)
+            {
+                output.WebsiteData = $"{header.Key}={header.Value.First()}";
+            }
+            using (fileStream)
+            {
+                await stream.CopyToAsync(fileStream);
+            }
+            await client.Download;
 
             return output;
         }
