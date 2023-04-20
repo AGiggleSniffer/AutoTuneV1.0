@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
@@ -9,75 +10,51 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using HttpClientProgress;
 
 namespace WpfPoShGUI
 {
 
-    public class Installer
+    public partial class MainWindow : Window
     {
         // Initialize HTTPClient Class. Only needs to be done once!
         static readonly HttpClient client = new HttpClient();
 
-        // List of strings kinda like an array but fancier
-        public static List<string> PrepData()
+        public async Task<bool> DownloadFile(string docUrl, string fileName, string startLocation, string installSwitch)
         {
-            List<string> output = new List<string>();
+            // for the sake of the example lets add a client definition here
+            var filePath = Path.Combine(@"C:\Users\Public\Downloads", fileName);
 
-            output.Add( "https://adwcleaner.malwarebytes.com/adwcleaner?channel=release" );
+            // Setup your progress reporter
+            var progress = new Progress<float>();
+            progress.ProgressChanged += Progress_ProgressChanged;
 
-            return output;
-        }
+            // Use the provided extension method
+            using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                await client.DownloadDataAsync(docUrl, file, progress);
 
-        // Download Async
-        public static async Task<List<WebsiteDataModel>> RunDownloadParallelAsync(IProgress<ProgressReportModel> progress)
-        {
-            List<string> websites = PrepData();
-            List<Task<WebsiteDataModel>> output = new List<Task<WebsiteDataModel>>();
-            ProgressReportModel report = new ProgressReportModel();
+            ScriptOutput.AppendText("\nInstalling...");
 
-            await Task.Run(() =>
+            var install = await Task<bool>.Run(() =>
             {
-                Parallel.ForEach<string>(websites, (site) =>
+                // if ADW no need to install
+                if (fileName == "ADWCleaner.exe" || fileName == "remote.msi") 
                 {
-                    WebsiteDataModel results = DownloadWebsiteAsync(site);
-                    output.Add(results);
+                    Process.Start(startLocation, installSwitch);
+                } else
+                {
+                    /// Install Silently
+                    var process = Process.Start(filePath, installSwitch);
+                    process.WaitForExit();
 
-                    report.SitesDownloaded = output;
-                    report.PercentageComplete = (output.Count * 100) / websites.Count;
-                    progress.Report(report);
-                });
+                    /// Run App
+                    Process.Start(startLocation);
+                }
+
+                return true;
             });
 
-            return output;
-        }
-
-        // Download Website data
-        public static async Task<WebsiteDataModel> DownloadWebsiteAsync(string websiteURL)
-        {
-            WebsiteDataModel output = new WebsiteDataModel();
-
-            output.WebsiteUrl = websiteURL;
-            var stream = await client.GetStreamAsync(websiteURL);
-            var response = await client.GetAsync(websiteURL, HttpCompletionOption.ResponseHeadersRead);
-            var fileStream = System.IO.File.Create(@"C:\Users\Public\Downloads\ADWCleaner.exe");
-
-            foreach ( var header in response.Headers)
-            {
-                output.WebsiteData = $"{header.Key}={header.Value.First()}";
-            }
-            using (fileStream)
-            {
-                await stream.CopyToAsync(fileStream);
-            }
-            await client.Download;
-
-            return output;
-        }
-
-        // Report progress data to text field
-        private string ReportWebsiteInfo(WebsiteDataModel data)
-        {
-            return data.WebsiteUrl;
+            return true;
         }
     }
 }

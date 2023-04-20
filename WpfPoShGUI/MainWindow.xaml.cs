@@ -64,133 +64,131 @@ namespace WpfPoShGUI
                 CB8.IsEnabled = true;
             }
         }
-
-        // Start main functions on button press
+        
+        // Start Main Commands
         public async void StartBtn_Click(object sender, EventArgs e)
         {
-            /// Disable start button 
-            /// The way the checkboxes are written into a string cause errors on a second start, 
-            /// but this prevents other issues as well
+            // Disable start button
             StartBtn.IsEnabled = false;
 
-            // Initialize progress bar value
-            ProgressBar1.Value = 0;
+            // Check and run Checkboxes
 
-            /// Check state of Checkboes and dump into string
-            /// Only dump into string to assign values after checking state
-            /// preventing a second for each statement to loop mass if statements,
-            /// since progress bar values need to be assigned after checking how many checboxes are selected
-            string selectedToppings = string.Empty;
-            int amountOfCB = 0;
-            CheckBox[] checkboxes = new CheckBox[] { CB1, CB2, CB3, CB5, CB6, CB7, CB8, CB9 };
-            foreach (CheckBox c in checkboxes)
-            {
-                if (c.IsChecked == true)
-                {
-                    string Topping = (string)c.Name;
-                    selectedToppings += Topping + " ";
-                    /// Keep track of how many check boxes are selected
-                    amountOfCB += 1;
-                }
-            }
-
-            // Find percentage of 100 from how many checkboxes are selected
-            double progVal = 0;
-            try
-            {
-                double val = 100 / amountOfCB;
-                progVal = Math.Round(val);
-            }
-            catch
-            {
-            }    
-
-            // Start Processes based on what user selected and assign progressbar values
-            if (selectedToppings.Contains("CB1"))
+            // Start Dism / SFC
+            if (CB1.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nStarting Dism/SFC\n");
                 FileChecker();
-                ProgressBar1.Value += progVal;
             }
-            if (selectedToppings.Contains("CB3"))
+            // Start Install of Support Tool
+            if (CB3.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading rescue.msi...");
-                await RS();
-                ScriptOutput.AppendText("\nCalling Card Repair Downloaded!\nOpening...\n");
-                ProgressBar1.Value += progVal;
+
+                var docUrl = "https://s3-us-west-2.amazonaws.com/nerdtools/remote.msi";
+                var fileName = "remote.msi";
+                var startLocation = @"C:\Users\Public\Downloads\remote.msi";
+                var installSwitch = "/qn";
+
+                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+
+                ScriptOutput.AppendText("\nCalling Card Downloaded!\nOpening...\n");
             }
-            if (selectedToppings.Contains("CB5"))
+            // Start Download of ADW
+            if (CB5.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading ADWCleaner...");
-                var len = await ADW();
-                ScriptOutput.AppendText("\nSize: " + len);
+
+                var docUrl = "https://adwcleaner.malwarebytes.com/adwcleaner?channel=release";
+                var fileName = "ADWCleaner.exe";
+                var startLocation = @"cmd.exe";
+                var installSwitch = @"/k C:\Users\Public\Downloads\ADWCleaner.exe /eula /clean /noreboot";
+
+                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+
                 ScriptOutput.AppendText("\nADWCleaner Downloaded!\nOpening...\n");
-                ProgressBar1.Value += progVal;
             }
-            if (selectedToppings.Contains("CB6"))
+            // Start Install of Malwarebytes
+            if (CB6.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading Malwarebytes...");
-                await MB();
+
+                var docUrl = "https://www.malwarebytes.com/api/downloads/mb-windows?filename=MBSetup.exe";
+                var fileName = "MBSetup.exe";
+                var startLocation = @"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe";
+                var installSwitch = "/verysilent /noreboot";
+
+                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+
                 ScriptOutput.AppendText("\nMalwarebytes Updated!\nOpening...\n");
-                ProgressBar1.Value += progVal;
             }
-            if (selectedToppings.Contains("CB7"))
+            // Start Install of GlarySoft
+            if (CB7.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading Glary Utilities...");
-                await GU();
+
+                var docUrl = "https://www.glarysoft.com/aff/download.php?s=GU";
+                var fileName = "GUSetup.exe";
+                var startLocation = @"C:\Program Files (x86)\Glary Utilities 5\OneClickMaintenance.exe";
+                var installSwitch = "/S";
+
+                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+
                 ScriptOutput.AppendText("\nGlary Utilities Updated!\nOpening...\n");
-                ProgressBar1.Value += progVal;
             }
-            if (selectedToppings.Contains("CB8"))
+            // Start Install of CCleaner
+            if (CB8.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading CCleaner...");
-                await CC();
-                ProgressBar1.Value += progVal;
+
+                var docUrl = "https://bits.avcdn.net/productfamily_CCLEANER/insttype_FREE/platform_WIN_PIR/installertype_ONLINE/build_RELEASE";
+                var fileName = "CCSetup.exe";
+                var startLocation = @"C:\Program Files\CCleaner\CCleaner64.exe";
+                var installSwitch = "/S";
+
+                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+
                 ScriptOutput.AppendText("\nCCleaner Updated!\nOpening...\n");
             }
-            if (selectedToppings.Contains("CB9"))
+            // Write UBlock Origin to Edge and Chrome registry
+            if (CB9.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nAdding Ublock Origin...");
+
                 await InstallUB();
+
                 ScriptOutput.AppendText("\nInstalled Ublock Origin to Google Chrome and Microsoft Edge\nOpen Chrome and Edge to Finish\n");
-                ProgressBar1.Value += progVal;
             }
-            /// Make NOC folder last for shortcuts
-            if (selectedToppings.Contains("CB2"))
+            // Make NOC folder last for shortcuts
+            if (CB2.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nMaking Nerds on Call Security Folder...");
-                await MakeNOC();
-                ScriptOutput.AppendText("\nNerds on Call Security Folder Made!\n");
-                ProgressBar1.Value += progVal;
-            }          
 
-            // Start Progress Bar
-            Duration duration = new Duration(TimeSpan.FromSeconds(60));
-            DoubleAnimation doubleanimation = new DoubleAnimation(ProgressBar1.Value, duration);
-            ProgressBar1.BeginAnimation(ProgressBar.ValueProperty, doubleanimation);
+                await MakeNOC();
+
+                ScriptOutput.AppendText("\nNerds on Call Security Folder Made!\n");
+            }
+
+            // Delete MB shortcut from installer
+            if (System.IO.File.Exists(@"C:\Users\Public\Desktop\Malwarebytes.lnk"))
+            {
+                System.IO.File.Delete(@"C:\Users\Public\Desktop\Malwarebytes.lnk");
+            }
+
+            // Delete CC shortcut from installer
+            if (System.IO.File.Exists(@"C:\Users\Public\Desktop\CCleaner.lnk"))
+            {
+                System.IO.File.Delete(@"C:\Users\Public\Desktop\CCleaner.lnk");
+            }
 
             ScriptOutput.AppendText("\nScript Complete.\n");
+
+            StartBtn.IsEnabled = true;
         }
 
-        public async void StartBtn_Click(object sender, RoutedEventArgs e)
+        public void Progress_ProgressChanged(object sender, float progress)
         {
-            Progress<ProgressReportModel> progress = new Progress<ProgressReportModel>();
-            progress.ProgressChanged += ReportProgress;
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-
-            var results = await Installer.RunDownloadParallelAsync(progress);
-            ScriptOutput.AppendText(results);
-
-            watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
-
-            ScriptOutput.AppendText($"Total execution time: { elapsedMs }");
-        }
-
-        private void ReportProgress(object sender, ProgressReportModel e)
-        {
-            ProgressBar1.Value = e.PercentageComplete;
-            ScriptOutput.AppendText((e.SitesDownloaded).ToString());
+            // Do something with your progress
+            ProgressBar1.Value = progress;
         }
     }
 }
