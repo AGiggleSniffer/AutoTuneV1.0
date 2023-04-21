@@ -228,6 +228,7 @@ namespace WpfPoShGUI
             }
 
             ScriptOutput.AppendText("\nScript Complete.\n");
+            
             ProgressText.Text = "Done!";
 
             StartBtn.IsEnabled = true;
