@@ -72,17 +72,43 @@ namespace WpfPoShGUI
             StartBtn.IsEnabled = false;
 
             // Check and run Checkboxes
+            int amountOfCB = 0;
+            CheckBox[] checkboxes = new CheckBox[] { CB1, CB2, CB3, CB5, CB6, CB7, CB8, CB9 };
+            foreach (CheckBox c in checkboxes)
+            {
+                if (c.IsChecked == true)
+                {
+                    // Keep track of how many check boxes are selected
+                    amountOfCB += 1;
+                }
+            }
+
+            // Find percentage of 100 from how many checkboxes are selected
+            double progVal = 0;
+            try
+            {
+                double val = 100 / amountOfCB;
+                progVal = Math.Ceiling(val);
+            }
+            catch
+            {
+            }
 
             // Start Dism / SFC
             if (CB1.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nStarting Dism/SFC\n");
+                ProgressText.Text = "Starting Dism/SFC...";
+
                 FileChecker();
+
+                ProgressBar1.Value += progVal;
             }
             // Start Install of Support Tool
             if (CB3.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading rescue.msi...");
+                ProgressText.Text = "Downloading rescue.msi...";
 
                 var docUrl = "https://s3-us-west-2.amazonaws.com/nerdtools/remote.msi";
                 var fileName = "remote.msi";
@@ -92,11 +118,13 @@ namespace WpfPoShGUI
                 await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
                 ScriptOutput.AppendText("\nCalling Card Downloaded!\nOpening...\n");
+                ProgressBar1.Value += progVal;
             }
             // Start Download of ADW
             if (CB5.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading ADWCleaner...");
+                ProgressText.Text = "Downloading ADWCleaner...";
 
                 var docUrl = "https://adwcleaner.malwarebytes.com/adwcleaner?channel=release";
                 var fileName = "ADWCleaner.exe";
@@ -106,11 +134,13 @@ namespace WpfPoShGUI
                 await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
                 ScriptOutput.AppendText("\nADWCleaner Downloaded!\nOpening...\n");
+                ProgressBar1.Value += progVal;
             }
             // Start Install of Malwarebytes
             if (CB6.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading Malwarebytes...");
+                ProgressText.Text = "Downloading Malwarebytes...";
 
                 var docUrl = "https://www.malwarebytes.com/api/downloads/mb-windows?filename=MBSetup.exe";
                 var fileName = "MBSetup.exe";
@@ -120,11 +150,13 @@ namespace WpfPoShGUI
                 await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
                 ScriptOutput.AppendText("\nMalwarebytes Updated!\nOpening...\n");
+                ProgressBar1.Value += progVal;
             }
             // Start Install of GlarySoft
             if (CB7.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading Glary Utilities...");
+                ProgressText.Text = "Downloading Glary Utilities...";
 
                 var docUrl = "https://www.glarysoft.com/aff/download.php?s=GU";
                 var fileName = "GUSetup.exe";
@@ -134,11 +166,13 @@ namespace WpfPoShGUI
                 await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
                 ScriptOutput.AppendText("\nGlary Utilities Updated!\nOpening...\n");
+                ProgressBar1.Value += progVal;
             }
             // Start Install of CCleaner
             if (CB8.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nDownloading CCleaner...");
+                ProgressText.Text = "Downloading CCleaner...";
 
                 var docUrl = "https://bits.avcdn.net/productfamily_CCLEANER/insttype_FREE/platform_WIN_PIR/installertype_ONLINE/build_RELEASE";
                 var fileName = "CCSetup.exe";
@@ -148,24 +182,29 @@ namespace WpfPoShGUI
                 await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
                 ScriptOutput.AppendText("\nCCleaner Updated!\nOpening...\n");
+                ProgressBar1.Value += progVal;
             }
             // Write UBlock Origin to Edge and Chrome registry
             if (CB9.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nAdding Ublock Origin...");
+                ProgressText.Text = "Adding Ublock Origin...";
 
                 await InstallUB();
 
                 ScriptOutput.AppendText("\nInstalled Ublock Origin to Google Chrome and Microsoft Edge\nOpen Chrome and Edge to Finish\n");
+                ProgressBar1.Value += progVal;
             }
             // Make NOC folder last for shortcuts
             if (CB2.IsChecked == true)
             {
                 ScriptOutput.AppendText("\nMaking Nerds on Call Security Folder...");
+                ProgressText.Text = "Making Nerds on Call Security Folder...";
 
                 await MakeNOC();
 
                 ScriptOutput.AppendText("\nNerds on Call Security Folder Made!\n");
+                ProgressBar1.Value += progVal;
             }
 
             // Delete MB shortcut from installer
@@ -188,7 +227,7 @@ namespace WpfPoShGUI
         public void Progress_ProgressChanged(object sender, float progress)
         {
             // Do something with your progress
-            ProgressBar1.Value = progress;
+            ProgressBar2.Value = progress;
         }
     }
 }

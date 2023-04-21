@@ -34,6 +34,7 @@ namespace WpfPoShGUI
                 await client.DownloadDataAsync(docUrl, file, progress);
 
             ScriptOutput.AppendText("\nInstalling...");
+            ProgressText.Text = "Installing...";
 
             var install = await Task<bool>.Run(() =>
             {
