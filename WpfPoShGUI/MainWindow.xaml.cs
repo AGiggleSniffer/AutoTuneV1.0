@@ -78,7 +78,7 @@ namespace WpfPoShGUI
             // Disable start button
             StartBtn.IsEnabled = false;
 
-            // Check and run Checkboxes
+            // Check how many Checkboxes
             int amountOfCB = 0;
             System.Windows.Controls.CheckBox[] checkboxes = new System.Windows.Controls.CheckBox[] { CB1, CB2, CB3, CB5, CB6, CB7, CB8, CB9 };
             foreach (System.Windows.Controls.CheckBox c in checkboxes)
@@ -99,6 +99,7 @@ namespace WpfPoShGUI
             }
             catch
             {
+                ScriptOutput.AppendText("\nNo Checkboxes Selected.\n");
             }
 
             // Start Dism / SFC
@@ -227,6 +228,7 @@ namespace WpfPoShGUI
             }
 
             ScriptOutput.AppendText("\nScript Complete.\n");
+            ProgressText.Text = "Done!";
 
             StartBtn.IsEnabled = true;
         }
