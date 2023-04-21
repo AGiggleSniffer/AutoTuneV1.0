@@ -202,7 +202,7 @@
         <StackPanel Grid.Row="1"
                     Grid.Column="1">
             <StackPanel>
-                <TabControl Margin="10,10,10,10"
+                <TabControl Margin="10,10,10,0"
                             Height="350"
                             Background="Transparent">
                     <TabControl.Resources>
@@ -276,10 +276,16 @@
                          BorderThickness="0,0,0,0">
                 </TextBox>
             </StackPanel>
-            <StackPanel Margin="10, 10, 10, 10">
+            <StackPanel Margin="10, 0, 10, 0">
+                <ProgressBar Height="20"
+                             Name="ProgressBar2"
+                             Value="0"
+>
+                </ProgressBar>
                 <ProgressBar Height="20" 
                              Name="ProgressBar1"
-                             Value="0">
+                             Value="0"
+                             Margin="0,2,0,0">
                 </ProgressBar>
             </StackPanel>
         </StackPanel>

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 
@@ -39,6 +40,12 @@ namespace WpfPoShGUI
             this.Close();
         }
 
+        // Minimize Window
+        private void Minimize_Click(object sender, EventArgs e) 
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
         // If Update tools are selected allow run of tools, if not disable run of tools
         public void CB4_Click(object sender, RoutedEventArgs e)
         {
@@ -73,8 +80,8 @@ namespace WpfPoShGUI
 
             // Check and run Checkboxes
             int amountOfCB = 0;
-            CheckBox[] checkboxes = new CheckBox[] { CB1, CB2, CB3, CB5, CB6, CB7, CB8, CB9 };
-            foreach (CheckBox c in checkboxes)
+            System.Windows.Controls.CheckBox[] checkboxes = new System.Windows.Controls.CheckBox[] { CB1, CB2, CB3, CB5, CB6, CB7, CB8, CB9 };
+            foreach (System.Windows.Controls.CheckBox c in checkboxes)
             {
                 if (c.IsChecked == true)
                 {
