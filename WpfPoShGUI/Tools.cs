@@ -12,130 +12,6 @@ namespace WpfPoShGUI
 {
     public partial class MainWindow : Window
     {
-        static readonly HttpClient client = new HttpClient();
-
-        /// Async Tasks to Download, Install, Then run target program
-        public static async Task<bool> ADW()
-        {
-            var route = @"C:\Users\Public\Downloads";
-            var url = "https://adwcleaner.malwarebytes.com/adwcleaner?channel=release";
-
-            /// Start Download
-            var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "ADWCleaner.exe")))
-            {
-                stream.CopyTo(fileStream);
-            }
-
-            /// Run App
-            /// Start cmd so itll stay open 
-            /// (Temp until i can figure out redirecting output or just reading log file),
-            /// scan, clean infection, do not reboot after
-            Process.Start(@"cmd.exe", @"/k C:\Users\Public\Downloads\ADWCleaner.exe /eula /clean /noreboot");
-           
-            return true;
-        }
-        public static async Task<bool> CC()
-        {
-            var url = "https://bits.avcdn.net/productfamily_CCLEANER/insttype_FREE/platform_WIN_PIR/installertype_ONLINE/build_RELEASE";
-            var route = @"C:\Users\Public\Downloads";
-
-            /// Download
-            var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "CCSetup.exe")))
-            {
-                stream.CopyTo(fileStream);
-            }
-
-            var install = await Task<bool>.Run(() => 
-            {
-                /// Install Silently
-                var process = Process.Start(@"C:\Users\Public\Downloads\CCSetup.exe", "/S");
-                process.WaitForExit();
-
-                /// Run App
-                Process.Start(@"C:\Program Files\CCleaner\CCleaner64.exe");
-
-                return true;
-            });
-
-            return true;
-        }
-        public static async Task<bool> MB()
-        {
-            var url = "https://www.malwarebytes.com/api/downloads/mb-windows?filename=MBSetup.exe";
-            var route = @"C:\Users\Public\Downloads";
-
-            /// Download
-            var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "MBSetup.exe")))
-            {
-                stream.CopyTo(fileStream);
-            }
-           
-            var install = await Task<bool>.Run(() => 
-            {
-                /// Install Silently, dont reboot!
-                var process = Process.Start(@"C:\Users\Public\Downloads\MBSetup.exe", "/verysilent /noreboot");
-                process.WaitForExit();
-
-                Process.Start(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe");
-
-                return true;
-            });
-
-            return true;
-        }
-        public static async Task<bool> GU()
-        {
-            var url = "https://www.glarysoft.com/aff/download.php?s=GU";
-            var route = @"C:\Users\Public\Downloads";
-
-            /// Download
-            var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "GUSetup.exe")))
-            {
-                stream.CopyTo(fileStream);
-            }
-
-            var install = await Task<bool>.Run(() => 
-            {
-                /// Install Silently
-                var process = Process.Start(@"C:\Users\Public\Downloads\GUSetup.exe", "/S");
-                process.WaitForExit();
-
-                /// Run App
-                Process.Start(@"C:\Program Files (x86)\Glary Utilities 5\OneClickMaintenance.exe");
-
-                return true;
-            });
-
-            return true;
-        }
-        public static async Task<bool> RS()
-        {
-            var url = "https://s3-us-west-2.amazonaws.com/nerdtools/remote.msi";
-            var route = @"C:\Users\Public\Downloads";
-
-                /// Download ZIP
-            var stream = await client.GetStreamAsync(url);
-            using (var fileStream = System.IO.File.Create(Path.Combine(route, "remote.msi")))
-            {
-                stream.CopyTo(fileStream);
-            }
-
-            var install = await Task<bool>.Run(() =>
-            {
-                /// Install Silently
-                var process = Process.Start(@"C:\Users\Public\Downloads\remote.msi", "/qn");
-                process.WaitForExit();
-
-                return true;
-            });
-
-            return true;
-        }
-
         /// Download Resources
         public static async Task<bool> Rez()
         {
@@ -171,8 +47,7 @@ namespace WpfPoShGUI
 
         /// Start DISM/SFC
         public static void FileChecker()
-        {
-            
+        {          
             Process process = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.UseShellExecute = true;
@@ -242,37 +117,25 @@ namespace WpfPoShGUI
             {
                 Shortcut("Malwarebytes", @"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe");
             }
-            // Delete MB shortcut from installer
-            if (System.IO.File.Exists(@"C:\Users\Public\Desktop\Malwarebytes.lnk"))
-            {
-                System.IO.File.Delete(@"C:\Users\Public\Desktop\Malwarebytes.lnk");
-            }
 
             // CC Shortcut
             if (System.IO.File.Exists(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"))
             {
             Shortcut("CCleaner", @"C:\Program Files\CCleaner\CCleaner64.exe");
             }
-            // Delete CC shortcut from installer
-            if (System.IO.File.Exists(@"C:\Users\Public\Desktop\CCleaner.lnk"))
-            {
-                System.IO.File.Delete(@"C:\Users\Public\Desktop\CCleaner.lnk");
-            }
 
             // GU Shortcut
-            if (System.IO.File.Exists(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"))
+            if (System.IO.File.Exists(@"C:\Program Files (x86)\Glary Utilities 5\Integrator.exe"))
             {
                 Shortcut("Glary Utilities", @"C:\Program Files (x86)\Glary Utilities 5\Integrator.exe");
             }
 
-
             // ADW Shortcut
-            if (System.IO.File.Exists(@"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe"))
+            if (System.IO.File.Exists(@"C:\Users\Public\Downloads\ADWCleaner.exe"))
             {
                 Shortcut("ADW Cleaner", @"C:\Users\Public\Downloads\ADWCleaner.exe");
             }
                 
-
             return true;
         }
 
