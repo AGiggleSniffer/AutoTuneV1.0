@@ -165,7 +165,7 @@
                         <CheckBox x:Name="CB3" Content="Install/Repair NOC Calling Card" Foreground="#E8E9ED" Margin="20,5,0,5" FontWeight="SemiBold"/>
                         <CheckBox x:Name="CB9" Content="Install UBlock Origin to Edge/Chrome" Foreground="#E8E9ED" Margin="20,5,0,5" FontWeight="SemiBold"/>
                         <CheckBox x:Name="CB4" Content="Download/Install/Update Tools" Foreground="#E8E9ED" Margin="20,5,0,5" IsChecked="True" Click="CB4_Click" FontWeight="SemiBold"/>
-                        <CheckBox x:Name="CB10" Content="Local Install" Foreground="#E8E9ED" Margin="40,5,0,5" IsChecked="False" FontWeight="SemiBold"/>
+                        <CheckBox x:Name="CB10" Content="Local Install/No Download" Foreground="#E8E9ED" Margin="40,5,0,5" IsChecked="False" FontWeight="SemiBold"/>
                         <CheckBox x:Name="CB5" Content="Run ADWCleaner" Foreground="#E8E9ED" Margin="60,5,0,5" IsChecked="True" FontWeight="SemiBold"/>
                         <CheckBox x:Name="CB6" Content="Open Malwarebytes" Foreground="#E8E9ED" Margin="60,5,0,5" IsChecked="True" FontWeight="SemiBold"/>
                         <CheckBox x:Name="CB7" Content="Open Glary Utilities" Foreground="#E8E9ED" Margin="60,5,0,5" IsChecked="True" FontWeight="SemiBold"/>

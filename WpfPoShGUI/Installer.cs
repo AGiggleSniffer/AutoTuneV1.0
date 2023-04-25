@@ -30,34 +30,40 @@ namespace WpfPoShGUI
             {
                 filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             }
+            else
+            {
+                // Setup your progress reporter
+                var progress = new Progress<float>();
+                progress.ProgressChanged += Progress_ProgressChanged;
 
-            // Setup your progress reporter
-            var progress = new Progress<float>();
-            progress.ProgressChanged += Progress_ProgressChanged;
-
-            // Use the provided extension method
-            using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-                await client.DownloadDataAsync(docUrl, file, progress);
+                // Use the provided extension method
+                using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    await client.DownloadDataAsync(docUrl, file, progress);
+            }
 
             ScriptOutput.AppendText("\nInstalling...");
             ProgressText.Text = "Installing...";
 
             var install = await Task<bool>.Run(() =>
             {
-                // if ADW no need to install
-                if (fileName == "ADWCleaner.exe" || fileName == "remote.msi") 
+                try
                 {
-                    Process.Start(startLocation, installSwitch);
-                } 
-                else
-                {
-                    /// Install Silently
-                    var process = Process.Start(filePath, installSwitch);
-                    process.WaitForExit();
+                    // if ADW no need to install
+                    if (fileName == "ADWCleaner.exe" || fileName == "remote.msi")
+                    {
+                        Process.Start(startLocation, installSwitch);
+                    }
+                    else
+                    {
+                        /// Install Silently
+                        var process = Process.Start(filePath, installSwitch);
+                        process.WaitForExit();
 
-                    /// Run App
-                    Process.Start(startLocation);
+                        /// Run App
+                        Process.Start(startLocation);
+                    }
                 }
+                catch { }
 
                 return true;
             });
