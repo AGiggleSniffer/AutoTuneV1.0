@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -164,81 +165,106 @@ namespace WpfPoShGUI
             // Start Install of Support Tool
             if (CB3.IsChecked == true)
             {
-                ScriptOutput.AppendText("\nDownloading rescue.msi...");
-                ProgressText.Text = "Downloading rescue.msi...";
-
                 var docUrl = "https://s3-us-west-2.amazonaws.com/nerdtools/remote.msi";
                 var fileName = "remote.msi";
-                var startLocation = @"C:\Users\Public\Downloads\remote.msi";
+                var startLocation = Path.Combine(Directory.GetCurrentDirectory(), fileName);
                 var installSwitch = "/qn";
 
-                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+                var result = await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
-                ScriptOutput.AppendText("\nCalling Card Downloaded!\nOpening...\n");
+                if (result == true)
+                {
+                    ScriptOutput.AppendText("\n" + fileName + " Updated!\nOpening...\n");
+                }
+                else
+                {
+                    ScriptOutput.AppendText("\nError During Install.\nCheck if Installers are Present.\n");
+                }
+
                 ProgressBar1.Value += progVal;
             }
             // Start Download of ADW
             if (CB5.IsChecked == true)
             {
-                ScriptOutput.AppendText("\nDownloading ADWCleaner...");
-                ProgressText.Text = "Downloading ADWCleaner...";
-
                 var docUrl = "https://adwcleaner.malwarebytes.com/adwcleaner?channel=release";
                 var fileName = "ADWCleaner.exe";
                 var startLocation = @"cmd.exe";
-                var installSwitch = @"/k C:\Users\Public\Downloads\ADWCleaner.exe /eula /clean /noreboot";
+                var installSwitch = @"/k " + Path.Combine(Directory.GetCurrentDirectory(), fileName) + " /eula /clean /noreboot";
 
-                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+                var result = await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
-                ScriptOutput.AppendText("\nADWCleaner Downloaded!\nOpening...\n");
+                if (result == true)
+                {
+                    ScriptOutput.AppendText("\n" + fileName + " Updated!\nOpening...\n");
+                }
+                else
+                {
+                    ScriptOutput.AppendText("\nError During Install.\nCheck if Installers are Present.\n");
+                }
+
                 ProgressBar1.Value += progVal;
             }
             // Start Install of Malwarebytes
             if (CB6.IsChecked == true)
             {
-                ScriptOutput.AppendText("\nDownloading Malwarebytes...");
-                ProgressText.Text = "Downloading Malwarebytes...";
-
                 var docUrl = "https://www.malwarebytes.com/api/downloads/mb-windows?filename=MBSetup.exe";
                 var fileName = "MBSetup.exe";
                 var startLocation = @"C:\Program Files\Malwarebytes\Anti-Malware\mbam.exe";
                 var installSwitch = "/verysilent /noreboot";
 
-                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+                var result = await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
-                ScriptOutput.AppendText("\nMalwarebytes Updated!\nOpening...\n");
+                if (result == true)
+                {
+                    ScriptOutput.AppendText("\n" + fileName + " Updated!\nOpening...\n");
+                }
+                else
+                {
+                    ScriptOutput.AppendText("\nError During Install.\nCheck if Installers are Present.\n");
+                }
+
                 ProgressBar1.Value += progVal;
             }
             // Start Install of GlarySoft
             if (CB7.IsChecked == true)
             {
-                ScriptOutput.AppendText("\nDownloading Glary Utilities...");
-                ProgressText.Text = "Downloading Glary Utilities...";
-
                 var docUrl = "https://www.glarysoft.com/aff/download.php?s=GU";
                 var fileName = "GUSetup.exe";
                 var startLocation = @"C:\Program Files (x86)\Glary Utilities 5\OneClickMaintenance.exe";
                 var installSwitch = "/S";
 
-                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+                var result = await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
-                ScriptOutput.AppendText("\nGlary Utilities Updated!\nOpening...\n");
+                if (result == true)
+                {
+                    ScriptOutput.AppendText("\n" + fileName + " Updated!\nOpening...\n");
+                }
+                else
+                {
+                    ScriptOutput.AppendText("\nError During Install.\nCheck if Installers are Present.\n");
+                }
+
                 ProgressBar1.Value += progVal;
             }
             // Start Install of CCleaner
             if (CB8.IsChecked == true)
             {
-                ScriptOutput.AppendText("\nDownloading CCleaner...");
-                ProgressText.Text = "Downloading CCleaner...";
-
                 var docUrl = "https://bits.avcdn.net/productfamily_CCLEANER/insttype_FREE/platform_WIN_PIR/installertype_ONLINE/build_RELEASE";
                 var fileName = "CCSetup.exe";
                 var startLocation = @"C:\Program Files\CCleaner\CCleaner64.exe";
                 var installSwitch = "/S";
 
-                await DownloadFile(docUrl, fileName, startLocation, installSwitch);
+                var result = await DownloadFile(docUrl, fileName, startLocation, installSwitch);
 
-                ScriptOutput.AppendText("\nCCleaner Updated!\nOpening...\n");
+                if (result == true)
+                {
+                    ScriptOutput.AppendText("\n" + fileName + " Updated!\nOpening...\n");
+                }
+                else
+                {
+                    ScriptOutput.AppendText("\nError During Install.\nCheck if Installers are Present.\n");
+                }
+                
                 ProgressBar1.Value += progVal;
             }
             // Write UBlock Origin to Edge and Chrome registry

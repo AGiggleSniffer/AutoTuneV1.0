@@ -22,16 +22,17 @@ namespace WpfPoShGUI
 
         public async Task<bool> DownloadFile(string docUrl, string fileName, string startLocation, string installSwitch)
         {
-            // for the sake of the example lets add a client definition here
-            var filePath = Path.Combine(@"C:\Users\Public\Downloads", fileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
-            // Local Install
             if (CB10.IsChecked == true)
             {
-                filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+                ScriptOutput.AppendText("\nNo Download Selected.");
             }
-            else
+            else 
             {
+                ScriptOutput.AppendText("\nDownloading " + fileName + "...");
+                ProgressText.Text = "Downloading " + fileName + "...";
+
                 // Setup your progress reporter
                 var progress = new Progress<float>();
                 progress.ProgressChanged += Progress_ProgressChanged;
@@ -39,9 +40,11 @@ namespace WpfPoShGUI
                 // Use the provided extension method
                 using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
                     await client.DownloadDataAsync(docUrl, file, progress);
+
+                ScriptOutput.AppendText("\n" + fileName + " Downloaded!\nOpening...\n");
             }
 
-            ScriptOutput.AppendText("\nInstalling...");
+            ScriptOutput.AppendText("\nInstalling " + fileName + "...");
             ProgressText.Text = "Installing...";
 
             var install = await Task<bool>.Run(() =>
@@ -55,18 +58,27 @@ namespace WpfPoShGUI
                     }
                     else
                     {
-                        /// Install Silently
+                        // Install Silently
                         var process = Process.Start(filePath, installSwitch);
                         process.WaitForExit();
 
-                        /// Run App
+                        // Run App
                         Process.Start(startLocation);
                     }
                 }
-                catch { }
+                catch
+                {
+                    return false;
+                }
 
                 return true;
             });
+
+            // Did install work?
+            if (install == false)
+            {
+                return false;
+            }
 
             return true;
         }
