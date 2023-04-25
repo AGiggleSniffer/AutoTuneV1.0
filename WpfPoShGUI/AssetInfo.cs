@@ -428,7 +428,7 @@ namespace WpfPoShGUI
             Host Name
         --------------------------------------
             {Environment.MachineName}
-            {HardwareInfo.GetAccountName()}
+            {Environment.UserName}
 
             
         --------------------------------------

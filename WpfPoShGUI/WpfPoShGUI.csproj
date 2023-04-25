@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="AssetInfo.cs" />
     <Compile Include="Installer.cs" />
+    <Compile Include="RoundCorners.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -165,6 +166,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Astro.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Dguy.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

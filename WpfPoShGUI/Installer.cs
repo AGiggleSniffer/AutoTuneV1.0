@@ -25,6 +25,12 @@ namespace WpfPoShGUI
             // for the sake of the example lets add a client definition here
             var filePath = Path.Combine(@"C:\Users\Public\Downloads", fileName);
 
+            // Local Install
+            if (CB10.IsChecked == true)
+            {
+                filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            }
+
             // Setup your progress reporter
             var progress = new Progress<float>();
             progress.ProgressChanged += Progress_ProgressChanged;
@@ -42,7 +48,8 @@ namespace WpfPoShGUI
                 if (fileName == "ADWCleaner.exe" || fileName == "remote.msi") 
                 {
                     Process.Start(startLocation, installSwitch);
-                } else
+                } 
+                else
                 {
                     /// Install Silently
                     var process = Process.Start(filePath, installSwitch);
